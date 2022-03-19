@@ -44,6 +44,7 @@ class RoadObjectDetector:
         scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0] # Confidence of detected objects
 
         detections = []
+        bbox_frame = np.zeros(frame.shape, dtype=np.uint8)
         for i in range(len(scores)):
             if (scores[i] > 0.7) and (scores[i] <= 1.0) and (int(classes[i]) in [2, 5]):
                 # Get bounding box coordinates and draw box
@@ -53,15 +54,15 @@ class RoadObjectDetector:
                 ymax = int(min(cap_width, boxes[i][2] * cap_height))
                 xmax = int(min(cap_width, boxes[i][3] * cap_width))
                 
-                cv2.rectangle(frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
+                cv2.rectangle(bbox_frame, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
                 # Draw label
                 object_name = self.labels[int(classes[i])] # Look up object name from "labels" array using class index
                 label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
                 labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
                 label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
-                cv2.rectangle(frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
-                cv2.putText(frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+                cv2.rectangle(bbox_frame, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
+                cv2.putText(bbox_frame, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
 
                 object = {
                     'type': object_name, 
@@ -69,4 +70,4 @@ class RoadObjectDetector:
                     }
                 detections.append(object)
 
-        return frame, detections
+        return bbox_frame, detections

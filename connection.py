@@ -28,7 +28,7 @@ class Connection:
 
         return req.json()
     
-    def fetch_object(self, objects):
+    def fetch_object(self):
         _data = {
             "ID": self.ID, 
         }
