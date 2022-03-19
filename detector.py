@@ -8,15 +8,19 @@ class RoadObjectDetector:
     def __init__(self, lamp_spec) -> None:
         self.position = lamp_spec["position"]
 
-        data_folder = "./TFLite_BBD"
+        # data_folder = "./TFLite_BBD"
+        data_folder = "./TFLite_SSD"
         self.model_path = path.join(data_folder, "detect.tflite")
         self.label_path = path.join(data_folder, "labelmap.txt")
 
         with open(self.label_path, 'r') as f:
             self.labels = [line.strip() for line in f.readlines()]
+        if self.labels[0] == '???':
+            del(self.labels[0])
+
         
         self.interpreter = Interpreter(self.model_path)
-        # print("Model Loaded Successfully.")
+        print("Model Loaded Successfully.")
 
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
@@ -25,7 +29,7 @@ class RoadObjectDetector:
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
         self.input_height, self.input_width = self.input_details[0]['shape'][1:3]
         self.input_mean, self.input_std = 127.5, 127.5
-        # print(f"Image Shape: ({self.input_width}, {self.input_height})")
+        print(f"Image Shape: ({self.input_width}, {self.input_height})")
     
     def detect(self, frame):
         cap_height, cap_width = frame.shape[:2]
@@ -46,7 +50,8 @@ class RoadObjectDetector:
         detections = []
         bbox_frame = np.zeros(frame.shape, dtype=np.uint8)
         for i in range(len(scores)):
-            if (scores[i] > 0.7) and (scores[i] <= 1.0) and (int(classes[i]) in [2, 5]):
+            # print(self.labels[int(classes[i])])
+            if (scores[i] > 0.7) and (scores[i] <= 1.0) and (int(classes[i]) in [0, 2]):
                 # Get bounding box coordinates and draw box
                 # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
                 ymin = int(max(1, boxes[i][0] * cap_height))

@@ -3,7 +3,7 @@ import RPi.GPIO as gpio
 
 class LED_IO:
     base_width = 32
-    period = 0.000005
+    period = 0.00001
 
     def __init__(self, pin):
         gpio.setmode(gpio.BCM)
@@ -11,6 +11,7 @@ class LED_IO:
         self.pin = pin
 
     def output(self, data):
+        data = [2912312114] + data
         index = 0
         high_signal_cnt = 0
         ret_list = [];

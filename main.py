@@ -1,6 +1,7 @@
 from threading import Thread
 import cv2
 import json
+import sys
 from time import time, sleep
 from detector import RoadObjectDetector
 from connection import Connection
@@ -25,10 +26,11 @@ def detect(frame):
 
     # detect objects and update database
     frame, detections = roadObjectDetector.detect(frame)
-    if len(detections) > 0:
-        print(f"\nDetected: {detections}\n")
-        ret = connection.update_detection(detections)
-        # print(ret)
+    # if len(detections) > 0:
+    print(f"\nDetected: {detections}\n")
+    ret = connection.update_detection(detections)
+    if ret['flag'] == '1':
+        print("\nDetection updated successfully\n")
 
     bbox_frame = frame    
     detecting = False
@@ -75,7 +77,8 @@ while True:
     # start detecting if previous thread ends
     if not detecting:
         detecting = True
-        Thread(target=lambda: detect(frame)).start()
+        detect_thread = Thread(target=lambda: detect(frame))
+        detect_thread.start()
     
     # draw bounding boxes on frame
     if bbox_frame is not None:
@@ -86,11 +89,17 @@ while True:
     # start fetching if previous thread ends
     if not fetching:
         fetching = True
-        Thread(target=lambda: fetch_object()).start()
+        fetch_thread = Thread(target=lambda: fetch_object())
+        fetch_thread.start()
     
     # send LiFi signal
     LiFiSend()
 
     cv2.imshow("img", frame)
     if cv2.waitKey(1) == ord('q'):
+        if detect_thread.is_alive():
+            detect_thread.join()
+        if fetch_thread.is_alive():
+            fetch_thread.join()
         break
+        # sys.exit()
