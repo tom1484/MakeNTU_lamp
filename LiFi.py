@@ -3,7 +3,7 @@ import RPi.GPIO as gpio
 
 class LED_IO:
     base_width = 32
-    period = 0.00001
+    period = 0.000005
 
     def __init__(self, pin):
         gpio.setmode(gpio.BCM)
