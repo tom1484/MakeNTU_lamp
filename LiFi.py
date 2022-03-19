@@ -6,6 +6,7 @@ class LED_IO:
     period = 0.01
 
     def __init__(self, pin):
+        gpio.setwarnings(False)
         gpio.setmode(gpio.BCM)
         gpio.setup(pin, gpio.OUT)
         self.pin = pin
