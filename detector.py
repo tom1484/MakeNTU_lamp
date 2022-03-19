@@ -16,7 +16,7 @@ class RoadObjectDetector:
             self.labels = [line.strip() for line in f.readlines()]
         
         self.interpreter = Interpreter(self.model_path)
-        print("Model Loaded Successfully.")
+        # print("Model Loaded Successfully.")
 
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
@@ -25,7 +25,7 @@ class RoadObjectDetector:
         self.floating_model = (self.input_details[0]['dtype'] == np.float32)
         self.input_height, self.input_width = self.input_details[0]['shape'][1:3]
         self.input_mean, self.input_std = 127.5, 127.5
-        print(f"Image Shape: ({self.input_width}, {self.input_height})")
+        # print(f"Image Shape: ({self.input_width}, {self.input_height})")
     
     def detect(self, frame):
         cap_height, cap_width = frame.shape[:2]
@@ -39,9 +39,9 @@ class RoadObjectDetector:
         self.interpreter.set_tensor(self.input_details[0]['index'], input_data)
         self.interpreter.invoke()
 
-        boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0] # Bounding box coordinates of detected objects
-        classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0] # Class index of detected objects
-        scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0] # Confidence of detected objects
+        boxes = self.interpreter.get_tensor(self.output_details[0]['index'])[0]
+        classes = self.interpreter.get_tensor(self.output_details[1]['index'])[0]
+        scores = self.interpreter.get_tensor(self.output_details[2]['index'])[0]
 
         detections = []
         bbox_frame = np.zeros(frame.shape, dtype=np.uint8)

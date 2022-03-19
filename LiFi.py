@@ -31,7 +31,7 @@ class LED_IO:
             modifier = modifier // 2
 
         start_stamp = time.time()
-        print(start_stamp)
+        # print(start_stamp)
         for signal in ret_list:
             while time.time() - start_stamp <= index * self.period:
                 pass
@@ -39,5 +39,5 @@ class LED_IO:
                 gpio.output(self.pin, gpio.HIGH)
             else:
                 gpio.output(self.pin, gpio.LOW)
-            print(signal, end="")
+            # print(signal, end="")
             index += 1;

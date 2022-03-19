@@ -1,15 +1,11 @@
-import cv2
+import RPi.GPIO as gpio
+from time import sleep
 
-cap = cv2.VideoCapture(0)
+gpio.setmode(gpio.BCM)
+gpio.setup(17, gpio.OUT)
 
 while True:
-    ret, img = cap.read()
-    if not ret:
-        continue
-
-    cv2.imshow('img', img)
-
-    key = cv2.waitKey(1)
-    if key == ord('q'):
-        break
-
+    gpio.output(17, gpio.HIGH)
+    sleep(1)
+    gpio.output(17, gpio.LOW)
+    sleep(1)
